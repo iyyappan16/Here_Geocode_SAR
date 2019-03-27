@@ -14,17 +14,20 @@ exports.handler = function(event, context, callback) {
     .then(() => callback(null, `Delivered ${event.Records.length} records`))
     .catch(callback);
 };
+  // address variable
     var address="";
     function buildRequestItems(records) {
     return records.map((record) => {
    
     const json = Buffer.from(record.kinesis.data, 'base64').toString('ascii');
     const item = JSON.parse(json);
-
+// retrieving Latitude & Longitue
     var latlong = item['Latitude']+","+item['Longitude'];
+      
+ // invoking lambda function with payload
     var lambda = new AWS.Lambda();
     var params = {
-      FunctionName: 'serverlessrepo-Geocode-GeocodeFunction-2HVE0ENF3XLW', /* required */
+      FunctionName: '', /* required function name*/ //serverlessrepo-Geocode-GeocodeFunction-8UY78GHJIUGYT
       Payload: JSON.stringify({ "pathParameters": { "prox":latlong,"mode": "retrieveAddresses", "maxresults": "1","gen": "9" } })
     };
     
@@ -47,7 +50,7 @@ exports.handler = function(event, context, callback) {
     };
   });
 }
-
+// push response to dynamo DB
 function buildRequests(requestItems) {
   const requests = [];
 
